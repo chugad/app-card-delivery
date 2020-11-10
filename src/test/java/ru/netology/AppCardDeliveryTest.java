@@ -1,13 +1,8 @@
 package ru.netology;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.support.pagefactory.ByAll;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import static com.codeborne.selenide.Condition.*;
@@ -15,19 +10,15 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 
 public class AppCardDeliveryTest {
-    @BeforeEach
-    void shouldStartBeforeEachTest(){
-        open("http://localhost:9999");
-    }
     String date = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
-    public String toString()
-    {
-        return this.date;
+    @BeforeEach
+    void shouldStartBeforeEachTest() {
+        open("http://localhost:9999");
     }
 
     @Test
-        void shouldTestHappyPath() {
+    void shouldTestHappyPath() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
         $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         $$("[data-test-id=date] input").get(0).setValue(date);
@@ -36,10 +27,7 @@ public class AppCardDeliveryTest {
         $("[data-test-id='agreement']").click();
         $(byText("Забронировать")).click();
         $("[data-test-id='notification']").waitUntil(text("Успешно!"), 15000).shouldBe(visible);
-        $("[data-test-id='notification']").waitUntil(text("Встреча успешно забронирована на "), 15000).shouldBe(visible);
-        $("[data-test-id='notification']").waitUntil(Condition.text(toString()), 15000).shouldBe(visible);
-
-
+        $("[data-test-id='notification']").waitUntil(text("Встреча успешно забронирована на " + date), 15000).shouldBe(visible);
     }
 
     @Test
@@ -53,6 +41,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
+
     @Test
     void shouldTestPathIfCityIsNotCapital() {
         $("[data-test-id=city] .input__control").setValue("Бийск");     //город не столица региона
@@ -64,6 +53,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Доставка в выбранный город недоступна"));
     }
+
     @Test
     void shouldTestPathDateEmpty() {
 
@@ -76,6 +66,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
     }
+
     @Test
     void shouldTestPathDateTwoDays() {
         String date2 = LocalDate.now().plusDays(2).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -88,6 +79,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Заказ на выбранную дату невозможен"));
     }
+
     @Test
     void shouldTestPathDateNow() {
         String date3 = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -100,6 +92,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Заказ на выбранную дату невозможен"));
     }
+
     @Test
     void shouldTestPathIfEmptyName() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
@@ -111,6 +104,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='name'] .input__sub").shouldBe(visible).shouldHave(exactText("Поле обязательно для заполнения"));
     }
+
     @Test
     void shouldTestPathIfInvalidName() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
@@ -122,6 +116,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='name'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
+
     @Test
     void shouldTestPathIfValidPhoneNumberWithoutPlus() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
@@ -133,6 +128,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
+
     @Test
     void shouldTestPathIfInvalidPhoneUnderLimitDown() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
@@ -144,6 +140,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
+
     @Test
     void shouldTestPathIfInvalidPhoneAfterLimit() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
@@ -155,6 +152,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldBe(visible).shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
+
     @Test
     void shouldTestPathIfEmptyPhoneNumber() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
@@ -166,6 +164,7 @@ public class AppCardDeliveryTest {
         $(byText("Забронировать")).click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
+
     @Test
     void shouldTestPathWithOutCheckbox() {
         $("[data-test-id=city] .input__control").setValue("Новосибирск");
